@@ -509,12 +509,12 @@
             </div>
         </section>
 
-        <!-- TRANG 13: MINI-GAME GHÉP ẢNH XÁO TRỘN DÙNG ẢNH 12.JPG -->
+        <!-- TRANG 13: MINI-GAME GHÉP ẢNH XÁO TRỘN CỰC DỄ (CHỈ 1 BƯỚC) -->
         <section id="page-13" class="page-section flex-col items-center w-full">
             <div class="glass-card p-6 md:p-8 w-full text-center">
                 <span class="text-4xl block mb-2">🧩✨</span>
                 <h2 class="font-cute text-3xl text-pink-500 mb-2">Ghép Ảnh Kỷ Niệm</h2>
-                <p class="text-xs mb-4 text-gray-600 font-medium">Trượt các mảnh ảnh 12.JPG để hoàn thiện bức tranh và mở khóa quà nhé! 👇</p>
+                <p class="text-xs mb-4 text-gray-600 font-medium">Trượt nhẹ 1 ô để hoàn thiện bức tranh và mở khóa quà nhé! 👇</p>
                 
                 <div class="max-w-[210px] mx-auto mb-6 bg-white p-2.5 rounded-2xl border-2 border-pink-300 shadow-md">
                     <div id="puzzle-board" class="grid grid-cols-3 gap-1 w-[190px] h-[190px] mx-auto"></div>
@@ -527,7 +527,7 @@
             </div>
         </section>
 
-        <!-- TRANG 14: 13.JPG (Ảnh cuối cùng) -->
+        <!-- TRANG 14: 13.JPG -->
         <section id="page-14" class="page-section flex-col items-center text-center w-full">
             <div class="glass-card p-8 md:p-10 w-full text-center">
                 <div class="relative mb-4">
@@ -586,7 +586,7 @@
                 placeholder.innerHTML = `
                     <span class="text-2xl mb-1">📸</span>
                     <span class="text-xs font-cute mb-1">[${labelText}]</span>
-                    <span class="text-[10px] text-pink-300">Chưa tìm thấy file. Hãy đổi tên ảnh thành ${labelText} đặt cùng thư mục nhé!</span>
+                    <span class="text-[10px] text-pink-300">Chưa tìm thấy file. Hãy đặt tên ảnh là ${labelText} cùng thư mục nhé!</span>
                 `;
                 parent.prepend(placeholder);
             }
@@ -651,32 +651,10 @@
             }, 600);
         }
 
-        // Logic Game Ghép Ảnh Xáo Trộn - Dùng ảnh 12.JPG làm nguồn cho mảnh ghép
+        // Logic Game Ghép Ảnh Cực Dễ (chỉ xáo trộn đúng 1 bước duy nhất từ trạng thái hoàn thành)
         const puzzleImageSrc = '12.JPG';
-        let puzzleState = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        let puzzleState = [0, 1, 2, 3, 4, 5, 7, 6, 8]; // Đảo nhẹ 2 ô cuối số 6 và 7
         const winningPuzzleState = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-
-        function shufflePuzzle() {
-            isPuzzleSolved = false;
-            let emptyIdx = 8;
-            for (let i = 0; i < 40; i++) {
-                const validMoves = [];
-                const r = Math.floor(emptyIdx / 3), c = emptyIdx % 3;
-                const moves = [[-1,0],[1,0],[0,-1],[0,1]];
-                moves.forEach(m => {
-                    const nr = r + m[0], nc = c + m[1];
-                    if (nr >= 0 && nr < 3 && nc >= 0 && nc < 3) {
-                        validMoves.push(nr * 3 + nc);
-                    }
-                });
-                if (validMoves.length > 0) {
-                    const randMove = validMoves[Math.floor(Math.random() * validMoves.length)];
-                    [puzzleState[emptyIdx], puzzleState[randMove]] = [puzzleState[randMove], puzzleState[emptyIdx]];
-                    emptyIdx = randMove;
-                }
-            }
-            if (checkPuzzleWin()) shufflePuzzle();
-        }
 
         function renderPuzzle() {
             const board = document.getElementById('puzzle-board');
@@ -746,7 +724,6 @@
 
         window.onload = function() { 
             createFloatingHearts(); 
-            shufflePuzzle();
             renderPuzzle(); 
         };
     </script>
