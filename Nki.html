@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhật Ký Tình Yêu - Mãi Bên Nhau</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fff0f5;
+            background-image: radial-gradient(#ffd1dc 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #5a4a4a;
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: background 0.8s ease-in-out;
+        }
+        .font-handwriting { font-family: 'Great Vibes', cursive; }
+        .font-cute { font-family: 'Pacifico', cursive; }
+
+        /* Glassmorphism Card cao cấp */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 3px solid rgba(255, 182, 193, 0.8);
+            box-shadow: 0 15px 35px rgba(255, 182, 193, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+            border-radius: 40px;
+            position: relative;
+        }
+        /* Tag trang trí đầu thẻ */
+        .glass-card::before {
+            content: '🎀 🌸 🧸 🌸 🎀';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            background: #fff;
+            padding: 4px 18px;
+            border-radius: 30px;
+            border: 2px dashed #ffb6c1;
+            box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        /* Polaroid Photo Style */
+        .polaroid {
+            background: #fff;
+            padding: 10px 10px 30px 10px;
+            border-radius: 4px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            position: relative;
+            transform: rotate(-2deg);
+            transition: transform 0.3s ease;
+        }
+        .polaroid:hover { transform: rotate(1deg) scale(1.02); }
+        .polaroid.right-tilt { transform: rotate(2deg); }
+        .polaroid.right-tilt:hover { transform: rotate(-1deg) scale(1.02); }
+        .polaroid.left-tilt { transform: rotate(-3deg); }
+        .polaroid.left-tilt:hover { transform: rotate(1deg) scale(1.02); }
+        
+        /* Washi Tape (Băng dính trang trí) */
+        .washi-tape {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-3deg);
+            width: 80px;
+            height: 25px;
+            background: rgba(255, 182, 193, 0.6);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            z-index: 5;
+            border-radius: 2px;
+        }
+        .washi-tape.tape-blue { background: rgba(173, 216, 230, 0.6); transform: translateX(-50%) rotate(2deg); }
+        .washi-tape.tape-yellow { background: rgba(255, 255, 224, 0.8); }
+        .washi-tape.tape-green { background: rgba(152, 251, 152, 0.6); }
+
+        /* Nút bấm siêu nảy */
+        .btn-cute {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border: 2px solid #fff;
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: #fff;
+            font-weight: bold;
+        }
+        .btn-cute:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.5);
+        }
+        .btn-ghost {
+            background: #fff;
+            color: #ff758c;
+            border: 2px solid #ffb6c1;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-ghost:hover {
+            transform: translateY(-3px);
+            background: #fff0f5;
+            box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+        }
+
+        /* Animations */
+        .page-section { display: none; animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .page-section.active { display: flex; }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px) rotate(-1deg); }
+            100% { opacity: 1; transform: scale(1) translateY(0) rotate(0); }
+        }
+        
+        .floating-heart {
+            position: fixed;
+            animation: floatUp 8s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) scale(0.5) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .chibi-bounce { animation: bounceSlow 2.5s infinite ease-in-out; }
+
+        /* Animation cho đường line bản đồ */
+        .path-line {
+            stroke-dasharray: 10;
+            animation: dash 20s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        /* Season Background Themes */
+        .theme-tet { background-color: #fff9c4; background-image: radial-gradient(#ffcdd2 1px, transparent 1px); }
+        .theme-spring { background-color: #e8f5e9; background-image: radial-gradient(#c8e6c9 1px, transparent 1px); }
+        .theme-summer { background-color: #e3f2fd; background-image: radial-gradient(#bbdefb 1px, transparent 1px); }
+        .theme-autumn { background-color: #fff3e0; background-image: radial-gradient(#ffe0b2 1px, transparent 1px); }
+        .theme-winter { background-color: #f3e5f5; background-image: radial-gradient(#e1bee7 1px, transparent 1px); }
+
+        .img-polaroid {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 2px;
+            display: block;
+        }
+
+        .upload-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff5252;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid #ffb6c1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        /* Puzzle Image Grid Styles */
+        .puzzle-piece {
+            background-size: 190px 190px;
+            cursor: pointer;
+            border: 1.5px solid #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.15s ease;
+        }
+        .puzzle-piece:active { transform: scale(0.95); }
+        .puzzle-blank {
+            background: rgba(255,182,193,0.15);
+            border: 2px dashed #ffb6c1;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body id="main-body" class="relative flex flex-col justify-between min-h-screen p-4 md:p-8">
+
+    <div id="hearts-container"></div>
+
+    <header class="relative z-10 text-center py-2">
+        <div class="bg-white/90 backdrop-blur rounded-full px-5 py-1.5 inline-block text-pink-500 font-bold text-xs shadow border border-pink-200">
+            💖 Cuốn Sổ Tay Tình Yêu 💖
+        </div>
+    </header>
+
+    <main class="relative z-10 max-w-lg mx-auto w-full my-auto flex-grow flex items-center justify-center py-4">
+
+        <!-- TRANG 1: 1.JPG -->
+        <section id="page-1" class="page-section active flex-col items-center text-center w-full">
+            <div class="glass-card p-8 md:p-10 w-full">
+                <span class="text-5xl mb-4 block chibi-bounce drop-shadow-md">🧸💌✨</span>
+                <h1 class="font-cute text-4xl md:text-5xl text-pink-500 mb-4 drop-shadow-sm leading-tight">Nhật Ký<br>Yêu Nhau</h1>
+                <p class="text-sm text-gray-600 font-medium leading-relaxed mb-6 px-2">"Từng trang nhật ký được dán lên bằng tất cả sự ngọt ngào, những nụ cười rạng rỡ và thanh xuân rực rỡ của đôi mình đó nha! 🌸"</p>
+                
+                <div class="polaroid left-tilt mx-auto w-[75%] mb-8">
+                    <div class="washi-tape tape-yellow"></div>
+                    <div class="w-full aspect-[4/3] bg-pink-50 flex flex-col items-center justify-center border border-pink-100 rounded-sm overflow-hidden relative group">
+                        <img id="img-page-1" src="1.JPG" alt="Ảnh 1" class="img-polaroid" onerror="handleImgError(this, '1.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-1')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-2xl text-gray-700 font-bold">Lần đầu đưa đón e 🛵</div>
+                </div>
+
+                <button onclick="nextPage()" class="btn-cute px-8 py-3 rounded-full text-sm">Lật Trang Nào! ✨</button>
+            </div>
+        </section>
+
+        <!-- TRANG 2: BẢN ĐỒ -->
+        <section id="page-2" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center">
+                <h2 class="font-cute text-3xl text-pink-500 mb-1">Bản Đồ Lộ Trình</h2>
+                <p class="text-[11px] text-gray-500 mb-4 font-bold">Follow con đường tình yêu của chúng mình 🗺️</p>
+                
+                <div class="relative w-full max-w-[280px] mx-auto py-2">
+                    <svg class="absolute inset-0 w-full h-full z-0 pointer-events-none" viewBox="0 0 300 380" fill="none">
+                        <path class="path-line" d="M 60 40 C 260 40, 260 140, 60 180 C -140 220, 260 280, 200 350" stroke="#ffb3c6" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                    
+                    <div class="relative z-10 flex flex-col space-y-5">
+                        <div class="flex justify-start pl-2">
+                            <div class="chibi-bounce bg-white p-2 rounded-2xl shadow-lg border-2 border-pink-300 flex items-center space-x-2">
+                                <span class="text-2xl bg-pink-100 rounded-xl p-1">👩‍❤️‍👨</span>
+                                <span class="text-xs font-cute text-pink-500 pr-2">Xuất phát!</span>
+                            </div>
+                        </div>
+                        <div onclick="goToPage(3)" class="flex justify-start pl-10 cursor-pointer group">
+                            <div class="bg-white/95 p-2 rounded-2xl border-2 border-pink-200 shadow w-48 flex items-center space-x-3 group-hover:scale-105 group-hover:border-pink-400 transition">
+                                <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-xl">☁️</div>
+                                <div class="text-left"><span class="text-[9px] font-bold text-pink-400 uppercase tracking-wider">Trạm 1</span><h3 class="font-bold text-gray-700 text-xs">Tam Đảo</h3></div>
+                            </div>
+                        </div>
+                        <div onclick="goToPage(4)" class="flex justify-end pr-6 cursor-pointer group">
+                            <div class="bg-white/95 p-2 rounded-2xl border-2 border-pink-200 shadow w-48 flex items-center space-x-3 group-hover:scale-105 group-hover:border-pink-400 transition flex-row-reverse space-x-reverse text-right">
+                                <div class="w-10 h-10 bg-cyan-50 rounded-full flex items-center justify-center text-xl">🌊</div>
+                                <div><span class="text-[9px] font-bold text-pink-400 uppercase tracking-wider">Trạm 2</span><h3 class="font-bold text-gray-700 text-xs">Suối Thái Nguyên</h3></div>
+                            </div>
+                        </div>
+                        <div onclick="goToPage(5)" class="flex justify-start pl-10 cursor-pointer group">
+                            <div class="bg-white/95 p-2 rounded-2xl border-2 border-pink-200 shadow w-48 flex items-center space-x-3 group-hover:scale-105 group-hover:border-pink-400 transition">
+                                <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-xl">🛶</div>
+                                <div class="text-left"><span class="text-[9px] font-bold text-pink-400 uppercase tracking-wider">Trạm 3</span><h3 class="font-bold text-gray-700 text-xs">Ninh Bình</h3></div>
+                            </div>
+                        </div>
+                        <div onclick="goToPage(6)" class="flex justify-center pl-8 cursor-pointer group">
+                            <div class="bg-white/95 p-2 rounded-2xl border-2 border-pink-200 shadow w-48 flex items-center space-x-3 group-hover:scale-105 group-hover:border-pink-400 transition">
+                                <div class="w-10 h-10 bg-yellow-50 rounded-full flex items-center justify-center text-xl">🌲</div>
+                                <div class="text-left"><span class="text-[9px] font-bold text-pink-400 uppercase tracking-wider">Trạm 4</span><h3 class="font-bold text-gray-700 text-xs">Đèo Ba Vì</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-6">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold">⬅️ Quay lại</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs">Tiếp tục ➡️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 3: 2.JPG -->
+        <section id="page-3" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center">
+                <span class="text-[10px] font-bold text-white bg-pink-400 px-3 py-1 rounded-full mb-2 inline-block shadow">☁️ Trạm 01</span>
+                <h2 class="font-cute text-3xl text-pink-500 mb-2">Mây Ngàn Tam Đảo</h2>
+                <p class="text-xs text-gray-600 mb-6 font-medium px-2">Sương mờ ảo ôm trọn hai trái tim, cùng nhau thưởng thức ly cà phê ấm áp lúc bình minh.</p>
+                
+                <div class="polaroid mx-auto w-[85%] mb-6">
+                    <div class="washi-tape"></div>
+                    <div class="w-full aspect-[4/3] bg-pink-50 flex flex-col items-center justify-center border border-pink-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-3" src="2.JPG" alt="Ảnh 2" class="img-polaroid" onerror="handleImgError(this, '2.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-3')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-gray-600 font-bold">First trip together... ☕</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="goToPage(2)" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold">⬅️ Bản đồ</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs">Trạm tới ➡️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 4: 3.JPG -->
+        <section id="page-4" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center">
+                <span class="text-[10px] font-bold text-white bg-cyan-400 px-3 py-1 rounded-full mb-2 inline-block shadow">🌊 Trạm 02</span>
+                <h2 class="font-cute text-3xl text-cyan-500 mb-2">Suối Thái Nguyên</h2>
+                <p class="text-xs text-gray-600 mb-6 font-medium px-2">Lội suối mát lạnh, nghe tiếng nước chảy róc rách hòa cùng tiếng cười giòn tan.</p>
+                
+                <div class="polaroid right-tilt mx-auto w-[85%] mb-6">
+                    <div class="washi-tape tape-blue"></div>
+                    <div class="w-full aspect-[4/3] bg-cyan-50 flex flex-col items-center justify-center border border-cyan-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-4" src="3.JPG" alt="Ảnh 3" class="img-polaroid" onerror="handleImgError(this, '3.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-4')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-gray-600 font-bold">Mát quá đi! 💦</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold">⬅️ Trở lại</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs">Trạm tới ➡️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 5: 4.JPG -->
+        <section id="page-5" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center">
+                <span class="text-[10px] font-bold text-white bg-green-500 px-3 py-1 rounded-full mb-2 inline-block shadow">🛶 Trạm 03</span>
+                <h2 class="font-cute text-3xl text-green-600 mb-2">Non Nước Ninh Bình</h2>
+                <p class="text-xs text-gray-600 mb-6 font-medium px-2">Ngồi thuyền xuôi dòng Tràng An, non nước hữu tình đẹp như một bức tranh vẽ.</p>
+                
+                <div class="polaroid mx-auto w-[85%] mb-6">
+                    <div class="washi-tape tape-green"></div>
+                    <div class="w-full aspect-[4/3] bg-green-50 flex flex-col items-center justify-center border border-green-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-5" src="4.JPG" alt="Ảnh 4" class="img-polaroid" onerror="handleImgError(this, '4.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-5')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-gray-600 font-bold">Bình yên lạ thường 🌿</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold">⬅️ Trở lại</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs">Trạm cuối ➡️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 6: 5.JPG -->
+        <section id="page-6" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center">
+                <span class="text-[10px] font-bold text-white bg-yellow-500 px-3 py-1 rounded-full mb-2 inline-block shadow">🌲 Trạm 04</span>
+                <h2 class="font-cute text-3xl text-yellow-600 mb-2">Đèo & VQG Ba Vì</h2>
+                <p class="text-xs text-gray-600 mb-6 font-medium px-2">Ôm nhau thật chặt, chinh phục những cung đèo uốn lượn xuyên qua rừng thông xanh.</p>
+                
+                <div class="polaroid right-tilt mx-auto w-[85%] mb-6">
+                    <div class="washi-tape tape-yellow"></div>
+                    <div class="w-full aspect-[4/3] bg-yellow-50 flex flex-col items-center justify-center border border-yellow-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-6" src="5.JPG" alt="Ảnh 5" class="img-polaroid" onerror="handleImgError(this, '5.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-6')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-gray-600 font-bold">Vivu trên xe máy 🛵</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold">⬅️ Trở lại</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs">Xem các Mùa 🧧</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 7: 6.JPG -->
+        <section id="page-7" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center" style="border-color: #ffcdd2;">
+                <span class="text-5xl block mb-2 chibi-bounce">🧧🧨✨</span>
+                <h2 class="font-cute text-4xl text-red-500 mb-2">3 Cái Tết Đoàn Viên</h2>
+                <p class="text-xs text-gray-700 mb-5 font-medium px-2">Ba mùa Tết cùng nhau đón giao thừa, nhận lì xì và mong bình an đến với hai gia đình.</p>
+                
+                <div class="polaroid mx-auto w-[85%] mb-6" style="transform: rotate(0deg);">
+                    <div class="washi-tape" style="background: rgba(255, 0, 0, 0.4);"></div>
+                    <div class="w-full aspect-square bg-red-50 flex flex-col items-center justify-center border border-red-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-7" src="6.JPG" alt="Ảnh 6" class="img-polaroid" onerror="handleImgError(this, '6.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-7')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-red-400 font-bold">Happy New Year! 🎆</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold" style="color:#f44336; border-color:#ffcdd2;">⬅️ Quay lại</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs" style="background: linear-gradient(135deg, #ff8a80, #ff5252);">Đón Xuân 🌸</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 8: 7.JPG -->
+        <section id="page-8" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center" style="border-color: #c8e6c9;">
+                <span class="text-5xl block mb-2 chibi-bounce">🌸🌱✨</span>
+                <h2 class="font-cute text-4xl text-green-600 mb-2">3 Mùa Xuân Rực Rỡ</h2>
+                <p class="text-xs text-gray-700 mb-5 font-medium px-2">Những ngày đầu năm thời tiết ấm áp, tình mình cũng nở hoa tươi đẹp như mùa xuân.</p>
+                
+                <div class="polaroid right-tilt mx-auto w-[85%] mb-6">
+                    <div class="washi-tape tape-green"></div>
+                    <div class="w-full aspect-square bg-green-50 flex flex-col items-center justify-center border border-green-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-8" src="7.JPG" alt="Ảnh 7" class="img-polaroid" onerror="handleImgError(this, '7.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-8')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-green-500 font-bold">Mùa hoa nở 🌼</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold" style="color:#4caf50; border-color:#c8e6c9;">⬅️ Về Tết</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs" style="background: linear-gradient(135deg, #a5d6a7, #66bb6a);">Sang Hè ☀️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 9: 8.JPG -->
+        <section id="page-9" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center" style="border-color: #bbdefb;">
+                <span class="text-5xl block mb-2 chibi-bounce">☀️🏖️🍉</span>
+                <h2 class="font-cute text-4xl text-blue-500 mb-2">3 Mùa Hè Năng Động</h2>
+                <p class="text-xs text-gray-700 mb-5 font-medium px-2">Cái nắng chói chang cũng không làm giảm đi nhiệt huyết của những chuyến đi đôi ta.</p>
+                
+                <div class="polaroid mx-auto w-[85%] mb-6">
+                    <div class="washi-tape tape-blue"></div>
+                    <div class="w-full aspect-square bg-blue-50 flex flex-col items-center justify-center border border-blue-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-9" src="8.JPG" alt="Ảnh 8" class="img-polaroid" onerror="handleImgError(this, '8.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-9')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-blue-400 font-bold">Vitamin Sea 🌊</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold" style="color:#2196f3; border-color:#bbdefb;">⬅️ Xuân</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs" style="background: linear-gradient(135deg, #90caf9, #42a5f5);">Vào Thu 🍂</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 10: 9.JPG -->
+        <section id="page-10" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center" style="border-color: #ffe0b2;">
+                <span class="text-5xl block mb-2 chibi-bounce">🍂🍁🌰</span>
+                <h2 class="font-cute text-4xl text-orange-500 mb-2">2 Mùa Thu Dịu Dàng</h2>
+                <p class="text-xs text-gray-700 mb-5 font-medium px-2">Trời se lạnh, lá vàng rơi, ôm nhau dạo phố hít hà mùi hoa sữa và cốm mới.</p>
+                
+                <div class="polaroid right-tilt mx-auto w-[85%] mb-6">
+                    <div class="washi-tape tape-yellow"></div>
+                    <div class="w-full aspect-square bg-orange-50 flex flex-col items-center justify-center border border-orange-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-10" src="9.JPG" alt="Ảnh 9" class="img-polaroid" onerror="handleImgError(this, '9.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-10')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-orange-400 font-bold">Gió heo may... 🍁</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold" style="color:#ff9800; border-color:#ffe0b2;">⬅️ Mùa Hè</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs" style="background: linear-gradient(135deg, #ffcc80, #ffa726);">Mùa Đông ❄️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 11: 10.JPG -->
+        <section id="page-11" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center" style="border-color: #e1bee7;">
+                <span class="text-5xl block mb-2 chibi-bounce">❄️🧣⛄</span>
+                <h2 class="font-cute text-4xl text-purple-500 mb-2">2 Mùa Đông Ấm Áp</h2>
+                <p class="text-xs text-gray-700 mb-5 font-medium px-2">Ngoài kia giá rét bao nhiêu thì bàn tay đan vào nhau lại thấy ấm áp bấy nhiêu.</p>
+                
+                <div class="polaroid mx-auto w-[85%] mb-6">
+                    <div class="washi-tape" style="background: rgba(225, 190, 231, 0.6);"></div>
+                    <div class="w-full aspect-square bg-purple-50 flex flex-col items-center justify-center border border-purple-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-11" src="10.JPG" alt="Ảnh 10" class="img-polaroid" onerror="handleImgError(this, '10.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-11')"></label>
+                    </div>
+                    <div class="mt-3 font-handwriting text-xl text-purple-400 font-bold">Ấm áp quá! ☕</div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold" style="color:#9c27b0; border-color:#e1bee7;">⬅️ Mùa Thu</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs" style="background: linear-gradient(135deg, #ce93d8, #ab47bc);">Đếm Ngày ⏳</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 12: 11.JPG -->
+        <section id="page-12" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-8 md:p-10 w-full text-center">
+                <h2 class="font-cute text-3xl text-pink-500 mb-4">Mỗi Ngày Đều Là Yêu</h2>
+                
+                <div class="relative bg-white/60 p-6 rounded-[30px] border-2 border-dashed border-pink-300 mb-6 shadow-inner">
+                    <div class="text-7xl font-cute text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-600 mb-2 drop-shadow-sm">1024</div>
+                    <div class="text-sm font-bold text-pink-400 uppercase tracking-widest">Ngày Bên Nhau 💖</div>
+                </div>
+
+                <div class="polaroid right-tilt mx-auto w-[70%] mb-8">
+                    <div class="washi-tape"></div>
+                    <div class="w-full aspect-[16/9] bg-pink-50 flex flex-col items-center justify-center border border-pink-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-12" src="11.JPG" alt="Ảnh 11" class="img-polaroid" onerror="handleImgError(this, '11.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-12')"></label>
+                    </div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold">⬅️ Mùa Đông</button>
+                    <button onclick="nextPage()" class="btn-cute px-5 py-2 rounded-full text-xs animate-bounce">Lấy Quà Nào! 🎁</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 13: MINI-GAME GHÉP ẢNH XÁO TRỘN CỰC DỄ (CHỈ 1 BƯỚC) -->
+        <section id="page-13" class="page-section flex-col items-center w-full">
+            <div class="glass-card p-6 md:p-8 w-full text-center">
+                <span class="text-4xl block mb-2">🧩✨</span>
+                <h2 class="font-cute text-3xl text-pink-500 mb-2">Ghép Ảnh Kỷ Niệm</h2>
+                <p class="text-xs mb-4 text-gray-600 font-medium">Trượt nhẹ 1 ô để hoàn thiện bức tranh và mở khóa quà nhé! 👇</p>
+                
+                <div class="max-w-[210px] mx-auto mb-6 bg-white p-2.5 rounded-2xl border-2 border-pink-300 shadow-md">
+                    <div id="puzzle-board" class="grid grid-cols-3 gap-1 w-[190px] h-[190px] mx-auto"></div>
+                </div>
+
+                <div class="flex justify-between items-center w-full mt-2">
+                    <button onclick="prevPage()" class="btn-ghost px-5 py-2 rounded-full text-xs font-bold">⬅️ Trở lại</button>
+                    <button id="btn-next-page14" disabled onclick="nextPage()" class="px-5 py-2 bg-gray-200 text-gray-400 font-bold rounded-full text-xs transition-all duration-300">Khóa 🔒</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRANG 14: 13.JPG -->
+        <section id="page-14" class="page-section flex-col items-center text-center w-full">
+            <div class="glass-card p-8 md:p-10 w-full text-center">
+                <div class="relative mb-4">
+                    <span class="text-6xl block chibi-bounce drop-shadow-lg">💍💖🧸</span>
+                    <span class="absolute top-0 left-0 text-xl animate-ping" style="animation-duration: 2s;">✨</span>
+                    <span class="absolute top-4 right-0 text-2xl animate-ping" style="animation-duration: 2.5s;">🌸</span>
+                </div>
+                
+                <h2 class="font-cute text-4xl md:text-5xl text-pink-500 mb-4 leading-tight">Mãi Bên Nhau<br>Nhé!</h2>
+                
+                <div class="polaroid right-tilt mx-auto w-[65%] mb-5">
+                    <div class="washi-tape"></div>
+                    <div class="w-full aspect-square bg-pink-50 flex flex-col items-center justify-center border border-pink-100 rounded-sm overflow-hidden relative">
+                        <img id="img-page-14" src="13.JPG" alt="Ảnh 13" class="img-polaroid" onerror="handleImgError(this, '13.JPG')">
+                        <label class="upload-badge">📷 Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="uploadLocalImage(event, 'img-page-14')"></label>
+                    </div>
+                </div>
+
+                <div class="bg-white/50 p-4 rounded-2xl border border-pink-100 mb-6">
+                    <p class="text-sm text-gray-700 leading-relaxed font-medium">"Cảm ơn em đã cùng anh đi qua mọi cung bậc cảm xúc. 1024 ngày qua thật tuyệt vời, nhưng đó chỉ mới là phần mở đầu cho cuốn tiểu thuyết hạnh phúc của đôi mình thôi! Yêu em nhiều lắm! 🌸✨"</p>
+                </div>
+
+                <button onclick="goToPage(1)" class="btn-ghost px-8 py-3 rounded-full text-sm font-bold shadow-sm">🔄 Đọc Lại Từ Đầu</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 text-center py-2 text-pink-400 font-bold text-xs uppercase tracking-widest">
+        Trang <span id="current-page-num" class="text-pink-600 text-sm">1</span> / 14 🎀
+    </footer>
+
+    <!-- MODAL CHÚC MỪNG -->
+    <div id="congrats-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-pink-100/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-card p-8 rounded-[35px] max-w-[280px] mx-4 text-center transform scale-90 transition-transform duration-300" id="modal-content">
+            <span class="text-6xl block mb-3 chibi-bounce">🎉🧸🎁</span>
+            <h3 class="font-cute text-3xl text-pink-500 mb-2">Đỉnh Quá Đi!</h3>
+            <p class="text-gray-600 text-xs mb-6 font-medium">Ghép ảnh hoàn thành xuất sắc! Trái tim đã được mở khóa. Bấm nhận quà ngay nha!</p>
+            <button onclick="closeModalAndUnlock()" class="btn-cute px-8 py-3 w-full text-white font-bold rounded-full text-sm shadow-lg">Mở Quà Ngay! ✨</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        let currentPage = 1;
+        const totalPages = 14;
+        let isPuzzleSolved = false;
+
+        function handleImgError(imgElement, labelText) {
+            const parent = imgElement.parentElement;
+            imgElement.style.display = 'none';
+            if(!parent.querySelector('.placeholder-box')) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'placeholder-box flex flex-col items-center justify-center p-3 text-pink-400 text-center h-full w-full';
+                placeholder.innerHTML = `
+                    <span class="text-2xl mb-1">📸</span>
+                    <span class="text-xs font-cute mb-1">[${labelText}]</span>
+                    <span class="text-[10px] text-pink-300">Chưa tìm thấy file. Hãy đặt tên ảnh là ${labelText} cùng thư mục nhé!</span>
+                `;
+                parent.prepend(placeholder);
+            }
+        }
+
+        function uploadLocalImage(event, imgId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(imgId);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    img.classList.remove('hidden');
+                    const parent = img.parentElement;
+                    const placeholder = parent.querySelector('.placeholder-box');
+                    if (placeholder) placeholder.remove();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showPage(pageNum) {
+            if (pageNum === 14 && !isPuzzleSolved) {
+                alert("Bạn cần hoàn thành bức tranh ghép ảnh ở trang 13 để mở khóa trang cuối nhé! 💖");
+                return;
+            }
+
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`page-${pageNum}`).classList.add('active');
+            document.getElementById('current-page-num').innerText = pageNum;
+            currentPage = pageNum;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const body = document.getElementById('main-body');
+            body.className = "relative flex flex-col justify-between min-h-screen p-4 md:p-8 transition-all duration-700";
+            if (pageNum === 7) body.classList.add('theme-tet');
+            else if (pageNum === 8) body.classList.add('theme-spring');
+            else if (pageNum === 9) body.classList.add('theme-summer');
+            else if (pageNum === 10) body.classList.add('theme-autumn');
+            else if (pageNum === 11) body.classList.add('theme-winter');
+        }
+
+        function nextPage() { if (currentPage < totalPages) showPage(currentPage + 1); }
+        function prevPage() { if (currentPage > 1) showPage(currentPage - 1); }
+        function goToPage(pageNum) { showPage(pageNum); }
+
+        function createFloatingHearts() {
+            const container = document.getElementById('hearts-container');
+            const icons = ['❤️', '💖', '💗', '🌸', '✨', '🎀', '🧸'];
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.className = 'floating-heart';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.fontSize = (Math.random() * 14 + 12) + 'px';
+                el.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                el.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                container.appendChild(el);
+                setTimeout(() => el.remove(), 10000);
+            }, 600);
+        }
+
+        // Logic Game Ghép Ảnh Cực Dễ (chỉ xáo trộn đúng 1 bước duy nhất từ trạng thái hoàn thành)
+        const puzzleImageSrc = '12.JPG';
+        let puzzleState = [0, 1, 2, 3, 4, 5, 7, 6, 8]; // Đảo nhẹ 2 ô cuối số 6 và 7
+        const winningPuzzleState = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+
+        function renderPuzzle() {
+            const board = document.getElementById('puzzle-board');
+            board.innerHTML = '';
+            puzzleState.forEach((val, idx) => {
+                const cell = document.createElement('div');
+                if (val === 8) {
+                    cell.className = "puzzle-blank aspect-square";
+                } else {
+                    cell.className = "puzzle-piece aspect-square";
+                    const x = (val % 3) * 63.3;
+                    const y = Math.floor(val / 3) * 63.3;
+                    cell.style.backgroundImage = `url('${puzzleImageSrc}')`;
+                    cell.style.backgroundPosition = `-${x}px -${y}px`;
+                    cell.style.backgroundSize = '190px 190px';
+                }
+                cell.onclick = () => movePuzzlePiece(idx);
+                board.appendChild(cell);
+            });
+        }
+
+        function movePuzzlePiece(idx) {
+            if (isPuzzleSolved) return;
+            const emptyIdx = puzzleState.indexOf(8);
+            const r = Math.floor(idx / 3), c = idx % 3;
+            const er = Math.floor(emptyIdx / 3), ec = emptyIdx % 3;
+
+            if (Math.abs(r - er) + Math.abs(c - ec) === 1) {
+                [puzzleState[emptyIdx], puzzleState[idx]] = [puzzleState[idx], puzzleState[emptyIdx]];
+                renderPuzzle();
+
+                if (checkPuzzleWin()) {
+                    isPuzzleSolved = true;
+                    const btn = document.getElementById('btn-next-page14');
+                    btn.disabled = false;
+                    btn.className = "btn-cute px-6 py-2 text-white font-bold rounded-full text-xs shadow-lg animate-bounce cursor-pointer";
+                    btn.innerText = "Mở Quà! 🔓";
+
+                    const modal = document.getElementById('congrats-modal');
+                    const modalContent = document.getElementById('modal-content');
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0');
+                        modalContent.classList.remove('scale-90');
+                    }, 50);
+                }
+            }
+        }
+
+        function checkPuzzleWin() {
+            for (let i = 0; i < puzzleState.length; i++) {
+                if (puzzleState[i] !== winningPuzzleState[i]) return false;
+            }
+            return true;
+        }
+
+        function closeModalAndUnlock() {
+            const modal = document.getElementById('congrats-modal');
+            const modalContent = document.getElementById('modal-content');
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                nextPage();
+            }, 300);
+        }
+
+        window.onload = function() { 
+            createFloatingHearts(); 
+            renderPuzzle(); 
+        };
+    </script>
+</body>
+</html>
